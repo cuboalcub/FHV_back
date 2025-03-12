@@ -25,6 +25,15 @@ class RackManager(models.Manager):
         rack.delete()
         
         return rack
+    
+    def get_seed_by_rack(self, rack_id):
+        rack = self.get_by_id(rack_id)
+        
+        # Verificar si rack tiene pedido y si el pedido tiene una semilla
+        if rack.id_pedido and rack.id_pedido.semilla:
+            return rack.id_pedido.semilla.nombre  # Acceder al nombre de la semilla
+    
+        return None  # Si no tiene semilla, devolver None
 
 # Create your models here.
 class Rack(models.Model):

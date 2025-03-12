@@ -20,3 +20,7 @@ class RackService:
     @staticmethod 
     def delete_rack(rack_id):
         return Rack.objects.delete_rack(rack_id)
+    
+    @staticmethod 
+    def get_seed_by_rack(rack_id):
+        return Rack.objects.get_seed_by_rack(rack_id)

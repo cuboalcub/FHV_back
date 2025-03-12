@@ -67,3 +67,15 @@ class RackViewSet(viewsets.ViewSet):
             return Response({"message": "Rack deleted successfully"}, status = status.HTTP_204_NO_CONTENT)
         except Rack.DoesNotExist:
             return Response({"error": "Rack not found"}, status = status.HTTP_404_NOT_FOUND)
+        
+    def get_seed(self, request, pk = None):
+        try:
+            seed_name = RackService.get_seed_by_rack(pk)
+            
+            if seed_name:
+                return Response({"semilla": seed_name}, status=status.HTTP_200_OK)
+            
+            return Response({"semilla": None}, status=status.HTTP_200_OK)
+        
+        except Rack.DoesNotExist:
+            return Response({"error": "Rack not found"}, status=status.HTTP_404_NOT_FOUND)
