@@ -1,17 +1,16 @@
 import abc
 from ENUM_RESPONSES import Responses
 from django.db import models  
-from IValidator import IValidator
 from django.forms.models import model_to_dict
 
 
 class IService(abc.ABC):
-    def __init__(self, model=None, repository=None, validator=None):
+    def __init__(self, model=None, repository=None ):
         if not model or not issubclass(model, models.Model):
             raise ValueError("Model must be a subclass of Django's models.Model")
         self.model = model
         self.repository = repository 
-        self.validator = validator
+        
 
     @classmethod
     def get_all(self):
@@ -54,7 +53,7 @@ class IService(abc.ABC):
 
         # Validación antes de modificar el objeto
         temp_entity = self.model(**{**entity.__dict__, **data})
-        self.validator.validate(temp_entity)
+        
 
         for key, value in data.items():
             setattr(entity, key, value)

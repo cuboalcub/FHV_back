@@ -11,18 +11,20 @@ service = UserService()
 @require_http_methods(["GET"])
 def list(request):
     users = service.get_all()
-    return JsonResponse(users, safe=False)  # Devuelve JSON directamente
+    return JsonResponse(users, safe=False)  
 
 @csrf_exempt
 @require_http_methods(["POST"])
 def create_user(request):
     data = json.loads(request.body)
     user = service.add(data)
-    return JsonResponse(user, safe=False)  # Devuelve JSON directamente
+    return JsonResponse(user, safe=False)  
 
 @csrf_exempt
 @require_http_methods(["POST"])
 def login(request):
     data = json.loads(request.body)
+    print(data)
     user = service.login(data)
-    return JsonResponse(user, safe=False)  # Devuelve JSON directamente
+    print(user)
+    return JsonResponse(user, safe=False)  

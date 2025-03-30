@@ -10,11 +10,10 @@ from JWTservice import JWTService
 class UserService(IService):
     model = User  
     repository = UserRepository()
-    validator = UserValidator()
     JWTService = JWTService()
     
     def __init__(self):
-        super().__init__(model=self.model, repository=self.repository, validator=self.validator)
+        super().__init__(model=self.model, repository=self.repository, )
     
     @override
     def add(self, data):
