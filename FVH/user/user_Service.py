@@ -24,9 +24,14 @@ class UserService(IService):
             return {"status": Responses.BAD_REQUEST.value}
 
     def login(self, data):
-        user = User.objects.get(username=data['username'])
-        if user:
-            if user.check_password(data['password']):
-                return JWTService.generate_token(user.id)
-            else:
-                return {"status": Responses.UNAUTHORIZED.value}
+        try:
+            user = self.repository.get_user_by_username(data['username'])
+            if user:
+                if user.check_password(data['password']):
+                    return {"token":JWTService.generate_token(user.id), "status": Responses.OK.value , "userType": user.is_superuser}
+                else:
+                    return {"status": Responses.UNAUTHORIZED.value}
+        except User.DoesNotExist:
+            return {"status": Responses.UNAUTHORIZED.value}
+        except Exception as e:
+            return {"status": Responses.INTERNAL_SERVER_ERROR.value, "error": str(e)}
