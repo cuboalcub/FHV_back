@@ -11,52 +11,63 @@ class IService(abc.ABC):
         self.model = model
         self.repository = repository 
         
+        
 
     @classmethod
+    def create(self, data):
+        print(f"Data: {data}")
+        entity = self.model(**data)
+        self.repository.save(entity)
+        return {"status": Responses.CREATED.value, "data": entity}
+    
+    @classmethod
     def get_all(self):
-        entities = self.model.objects.all()
-        print(entities)
-        return {
-            "status": Responses.ACCEPTED.value,
-            "data": [model_to_dict(entity) for entity in entities]  # 🔥 Convierte objetos a diccionarios
-        }
+        try:
+            entities = self.repository.find_all()
+            return {
+                "status": Responses.ACCEPTED.value,
+                "data": [model_to_dict(entity) for entity in entities]  # 🔥 Convierte objetos a diccionarios
+            }
+        except Exception as e:
+            return {"status": Responses.INTERNAL_SERVER_ERROR.value}
 
 
     @classmethod
     def get_by_id(self, id):
-        entity = self.repository.find_by_id(self.model, id)
-        return {"status": Responses.ACCEPTED.value, "data": entity.to_dict()} if entity else {"status": Responses.NOT_FOUND.value}
+        try:
+            entity = self.repository.find_by_id( id)
+            return {"status": Responses.ACCEPTED.value, "data": entity} if entity else {"status": Responses.NOT_FOUND.value}
+        except Exception as e:
+            print(f"Error: {e}")
+            return {"status": Responses.INTERNAL_SERVER_ERROR.value, "error": str(e)}
 
     @classmethod
     def add(self, data):
-        print(data)
-        print(self.model)
-        entity = self.model(**data)
-        self.repository.save( entity)
-        return {"status": Responses.CREATED.value}
+        instance = self.repository.save(data)
+        return {"status": Responses.CREATED.value, "data": instance}
 
     @classmethod
-    def delete(self, id):
-        if id is None:
-            return {"status": Responses.BAD_REQUEST.value}
-
-        deleted_count = self.repository.delete(self.model, id)
-        if deleted_count == 0:
+    def delete(self, id,user):
+        entity = self.repository.find_by_id(id)
+        if not entity:
             return {"status": Responses.NOT_FOUND.value}
-        return {"status": Responses.NO_CONTENT.value}
+        entity = self.repository.delete(id,user)
+        entity.delete()
+        if entity == 0:
+            return {"status": Responses.NOT_FOUND.value}
+        return {"status": Responses.OK.value}
 
     @classmethod
     def update(self, id, data):
-        entity = self.repository.find_by_id(self.model, id)
+        entity = self.repository.find_by_id(id)
         if not entity:
             return {"status": Responses.NOT_FOUND.value}
 
-        # Validación antes de modificar el objeto
-        temp_entity = self.model(**{**entity.__dict__, **data})
-        
+        entity_dict = model_to_dict(entity)
+        temp_entity = self.model(**{**entity_dict, **data})
 
         for key, value in data.items():
             setattr(entity, key, value)
 
-        self.repository.update(self.model, id, entity)
+        self.repository.update(id, entity)
         return {"status": Responses.OK.value}

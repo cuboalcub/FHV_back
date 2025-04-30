@@ -26,9 +26,7 @@ SECRET_KEY = 'django-insecure-h3$38hqvzqu2d4%4qcf97x=s&(+2yex=-f#u=_x#pb6o8yrfhk
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    'a8c5-200-68-170-30.ngrok-free.app'
+'*'
 ]
 
 
@@ -41,11 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'user',
-     'rest_framework',
+    'rest_framework',
     'rest_framework_simplejwt',
-    'pedido',
     'corsheaders',
+    'user',
+    'mqtt',
+    'log_notificaciones',
+    'pedidos',
+    
 ]
 
 MIDDLEWARE = [

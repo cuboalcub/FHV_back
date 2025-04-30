@@ -24,7 +24,5 @@ def create_user(request):
 @require_http_methods(["POST"])
 def login(request):
     data = json.loads(request.body)
-    print(data)
     user = service.login(data)
-    print(user)
     return JsonResponse(user, safe=False)  
