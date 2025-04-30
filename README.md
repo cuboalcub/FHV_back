@@ -7,6 +7,16 @@ python -m venv .venv
 ```bash
 pip install -r req.txt
 ```
+## Crear la base de datos
+
+1. 
+```bash
+python manage.py makemigrations
+```
+2. 
+```bash
+python manage.py migrate
+```
 
 ## Ejecutar
 
