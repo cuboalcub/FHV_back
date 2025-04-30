@@ -2,7 +2,6 @@ from django.db import models
 
 class Invernadero(models.Model):
     id = models.AutoField(primary_key=True)
-    id_edificio = models.IntegerField()  # Asumo que "id_recido" era "id_edificio"
     ubicacion = models.CharField(max_length=100)  # Sin tilde para evitar problemas
     temperatura = models.FloatField()
     humedad = models.FloatField()
