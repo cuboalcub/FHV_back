@@ -10,13 +10,11 @@ class BaseRepository:
         return self.model.objects.all()
 
     def save(self, entity):
-        if not isinstance(entity, self.model):
-            raise ValueError("Entity must be an instance of the model")
-        entity.save()
-        return entity
+        instace = self.model.objects.create(**entity)
+        return instace
 
-    def delete(self, id):
-        return self.model.objects.filter(id=id).delete()
+    def delete(self, id,user):
+        return self.model.objects.filter(id=id, user_id=user).first()
 
     def update(self, id, data):
         return self.model.objects.filter(id=id).update(**data)

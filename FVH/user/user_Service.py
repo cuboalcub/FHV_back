@@ -30,8 +30,8 @@ class UserService(IService):
                 if user.check_password(data['password']):
                     return {"token":JWTService.generate_token(user.id), "status": Responses.OK.value , "userType": user.is_superuser}
                 else:
-                    return {"status": Responses.UNAUTHORIZED.value}
+                    return {"status": Responses.UNAUTHORIZED.value, "error": "Invalid password"}
         except User.DoesNotExist:
-            return {"status": Responses.UNAUTHORIZED.value}
+            return {"status": Responses.UNAUTHORIZED.value, "error": "User does not exist"}
         except Exception as e:
             return {"status": Responses.INTERNAL_SERVER_ERROR.value, "error": str(e)}

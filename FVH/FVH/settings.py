@@ -42,9 +42,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
-    'pedido',
     'user',
     'mqtt',
+    'log_notificaciones',
+    'pedidos',
     
 ]
 
