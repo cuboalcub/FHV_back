@@ -19,9 +19,18 @@ def list(request):
     user_id = request.user_id
     pedidos = service.get_all(user_id)
     if len(pedidos["data"]) == 0:
-        return JsonResponse({"message": "No hay pedidos"}, status=404)
+        return JsonResponse({"status": 200, "message": "No hay pedidos"})
     pedidos = pedidos["data"]
     pedidos = [model_to_dict(pedido) for pedido in pedidos]
+
+    for pedido in pedidos:
+        detalle_pedido = DetallePedido.objects.filter(pedido_id=pedido["id"])
+        detalle_pedido_list = []
+        for detalle in detalle_pedido:
+            detalle_dict = model_to_dict(detalle)
+            detalle_pedido_list.append(detalle_dict)
+        pedido["detalle_pedido"] = detalle_pedido_list
+
     return JsonResponse(pedidos, safe=False)
 
 @jwt_required
@@ -32,8 +41,8 @@ def create(request):
     data = json.loads(request.body)
     user_id = userService.get_by_id(user_id).get("data")  
     data["user_id"] = user_id
-    pedido = service.add(data).get("data")   
-    return JsonResponse({'status': 201, 'message': 'Pedido creado exitosamente.'})
+    pedido = model_to_dict(service.add(data).get("data") )  
+    return JsonResponse({'status': 201, 'data': pedido.get("id")})
 
 @jwt_required
 @csrf_exempt
@@ -57,3 +66,18 @@ def delete_pedido(request, id):
     pedido.delete()
     return JsonResponse({"message": "Pedido eliminado exitosamente"}, status=200)
 
+
+@jwt_required
+@require_http_methods(["PATCH"])
+def update_estado(request, id):
+    data = json.loads(request.body)
+    estado = data.get("estado")
+    if not estado:
+        return JsonResponse({"message": "Estado no proporcionado"}, status=400)
+    user = userService.get_by_id(request.user_id).get("data")
+    pedido = Pedidos.objects.filter(id=id, user_id=user).first()
+    if not pedido:
+        return JsonResponse({"message": "Pedido no encontrado"}, status=404)
+    pedido.estado = estado
+    pedido.save()
+    return JsonResponse({"message": "Estado actualizado exitosamente"}, status=200)

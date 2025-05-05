@@ -1,8 +1,11 @@
 from django.db import models
-
+from pedidos.models import Pedido  
+from django.contrib.auth.models import User
 class Invernadero(models.Model):
     id = models.AutoField(primary_key=True)
-    ubicacion = models.CharField(max_length=100)  # Sin tilde para evitar problemas
+    id_user = models.ForeignKey(User, on_delete=models.CASCADE)
+    id_pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)  
+    ubicacion = models.CharField(max_length=100)
     temperatura = models.FloatField()
     humedad = models.FloatField()
     lumentes = models.FloatField()  # Iluminación en lúmenes (¿correcto?)

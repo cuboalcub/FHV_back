@@ -36,7 +36,7 @@ class IService(abc.ABC):
     def get_by_id(self, id):
         try:
             entity = self.repository.find_by_id( id)
-            return {"status": Responses.ACCEPTED.value, "data": entity} if entity else {"status": Responses.NOT_FOUND.value}
+            return {"status": Responses.ACCEPTED.value, "data": model_to_dict(entity)} if entity else {"status": Responses.NOT_FOUND.value}
         except Exception as e:
             print(f"Error: {e}")
             return {"status": Responses.INTERNAL_SERVER_ERROR.value, "error": str(e)}
