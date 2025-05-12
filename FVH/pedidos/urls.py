@@ -5,4 +5,4 @@ urlpatterns = [
     path('create', create ),
     path('put/<int:id>', update_pedido),
     path('delete/<int:id>', delete_pedido)
-]
+] 

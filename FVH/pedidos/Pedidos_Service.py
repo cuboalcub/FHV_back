@@ -14,9 +14,9 @@ class PedidosService(IService):
         super().__init__(model=self.model, repository=self.repository)
 
     @override
-    def get_all(self,user_id):
+    def get_all(self,id):
         try:
-            return { "data": self.repository.find_all(user_id), "status": Responses.OK.value }
+            return { "data": self.repository.find_all(id), "status": Responses.OK.value }
         except Exception as e:
             return {  "status": Responses.INTERNAL_SERVER_ERROR.value, "data": str(e) }
     

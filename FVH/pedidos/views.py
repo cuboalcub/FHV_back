@@ -12,12 +12,16 @@ import json
 service = PedidosService()
 userService = UserService()
 
-
+@csrf_exempt
 @jwt_required
-@require_http_methods(["GET"])
+@require_http_methods(["POST"])  
 def list(request):
-    user_id = request.user_id
-    pedidos = service.get_all(user_id)
+    id = json.loads(request.body)
+    id = id.get("id")
+    print(id)
+    if id == "undefined" or id == None: 
+        return JsonResponse({"status": 400, "message": "No se ha proporcionado un id"})
+    pedidos = service.get_all(id)
     if len(pedidos["data"]) == 0:
         return JsonResponse({"status": 200, "message": "No hay pedidos"})
     pedidos = pedidos["data"]
@@ -36,13 +40,15 @@ def list(request):
 @jwt_required
 @csrf_exempt
 @require_http_methods(["POST"])
-def create(request):
+def create(request):        
     user_id = request.user_id
     data = json.loads(request.body)
-    user_id = userService.get_by_id(user_id).get("data")  
+    print(data)
+    user_id = userService.get_by_id(user_id).get("data")
     data["user_id"] = user_id
-    pedido = model_to_dict(service.add(data).get("data") )  
-    return JsonResponse({'status': 201, 'data': pedido.get("id")})
+    pedido = service.add(data).get("data") 
+    print(pedido)
+    return JsonResponse({'status': 201})
 
 @jwt_required
 @csrf_exempt
@@ -50,6 +56,7 @@ def create(request):
 def update_pedido(request, id):
         data = json.loads(request.body)
         user = userService.get_by_id(request.user_id).get("data")
+        user = User(user)
         data["user_id"] = user
         response = service.update(id, data)
         return JsonResponse(response)
@@ -59,8 +66,7 @@ def update_pedido(request, id):
 @require_http_methods(["DELETE"])
 @csrf_exempt
 def delete_pedido(request, id):
-    user = userService.get_by_id(request.user_id).get("data")
-    pedido = Pedidos.objects.filter(id=id, user_id=user).first()
+    pedido = Pedidos.objects.filter(id=id).first()
     if not pedido:
         return JsonResponse({"message": "Pedido no encontrado"}, status=404)
     pedido.delete()

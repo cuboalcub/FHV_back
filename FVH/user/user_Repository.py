@@ -13,6 +13,7 @@ class UserRepository(BaseRepository):
     def get_user_by_username(self, username):
         try:
             user = self.model.objects.get(username=username)
+            
             return user
         except self.model.DoesNotExist:
             return None
@@ -110,6 +111,18 @@ class UserRepository(BaseRepository):
         except User.DoesNotExist:
             return False
         
+    def user_in_group_by_id(self,user):  
+        try:
+            detalle = detalleGroup.objects.filter(user_id=user).first()
+            if detalle is None:
+                return None
+            detalle = model_to_dict(detalle)
+            return detalle["group_id"]
+        
+        except detalleGroup.DoesNotExist:
+            return None
+        
+        
     def delete_of_group(self, id):
         try:
             detalle = detalleGroup.objects.get(id=id)
@@ -138,3 +151,14 @@ class UserRepository(BaseRepository):
             return None
         except Exception as e:
             print(f"Error completo: {traceback.format_exc()}")
+
+    def get_group_by_user(self, user):
+        try:
+            detalle = detalleGroup.objects.filter(user_id=user).first()
+            if not detalle:
+                return None
+            detalle = model_to_dict(detalle)
+            Group = Group.objects.get(id=detalle["group_id"])
+            return Group
+        except detalleGroup.DoesNotExist:
+            return None

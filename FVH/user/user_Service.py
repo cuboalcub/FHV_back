@@ -27,11 +27,24 @@ class UserService(IService):
     def login(self, data):
         try:
             user = self.repository.get_user_by_username(data['username'])
-            if user:
-                if user.check_password(data['password']):
-                    return {"token":JWTService.generate_token(user.id), "status": Responses.OK.value , "userType": user.is_superuser}
-                else:
-                    return {"status": Responses.UNAUTHORIZED.value, "error": "Invalid password"}
+            if user is None:
+                return {"status": Responses.UNAUTHORIZED.value, "error": "Invalid username or password."}
+
+            if not user.check_password(data['password']):
+                return {"status": Responses.UNAUTHORIZED.value, "error": "Invalid username or password."}
+
+            group = self.repository.user_in_group_by_id(user.id)
+
+            response = {
+                "token": JWTService.generate_token(user.id),
+                "status": Responses.OK.value,
+                "userType": user.is_superuser
+            }
+
+            if group:
+                response["group"] = group
+
+            return response
         except User.DoesNotExist:
             return {"status": Responses.UNAUTHORIZED.value, "error": "User does not exist"}
         except Exception as e:

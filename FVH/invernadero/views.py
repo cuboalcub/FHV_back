@@ -14,22 +14,19 @@ userService = UserService()
 @jwt_required
 @require_http_methods(["GET"])
 def list(request):
-    user_id = request.user_id
-    invernaderos = service.get_all(user_id)
-    invernaderos = invernaderos["data"]
-    invernaderos = [model_to_dict(pedido) for pedido in invernaderos]
+    user = userService.get_by_id(request.user_id).get("data")
+    invernaderos = service.get_all(user)
     return JsonResponse(invernaderos, safe=False)
 
 @jwt_required
 @csrf_exempt
 @require_http_methods(["POST"])
 def create(request):
-    user_id = request.user_id
+    user = userService.get_by_id(request.user_id).get("data")
     data = json.loads(request.body)
-    user_id = userService.get_by_id(user_id).get("data")  
-    data["user_id"] = user_id
-    invernadero = service.add(data).get("data")   
-    return JsonResponse({'status': 201, 'message': 'Pedido creado exitosamente.'})
+    invernadero = service.create(data)
+    return JsonResponse(invernadero, safe=False)
+
 
 @jwt_required
 @csrf_exempt
@@ -42,14 +39,14 @@ def update_pedido(request, id):
         return JsonResponse(response)
 
 
-@jwt_required
-@require_http_methods(["DELETE"])
-@csrf_exempt
-def delete_pedido(request, id):
-    user = userService.get_by_id(request.user_id).get("data")
-    pedido = Pedidos.objects.filter(id=id, user_id=user).first()
-    if not pedido:
-        return JsonResponse({"message": "Pedido no encontrado"}, status=404)
-    pedido.delete()
-    return JsonResponse({"message": "Pedido eliminado exitosamente"}, status=200)
+# @jwt_required
+# @require_http_methods(["DELETE"])
+# @csrf_exempt
+# def delete_pedido(request, id):
+#     user = userService.get_by_id(request.user_id).get("data")
+#     pedido = Pedidos.objects.filter(id=id, user_id=user).first()
+#     if not pedido:
+#         return JsonResponse({"message": "Pedido no encontrado"}, status=404)
+#     pedido.delete()
+#     return JsonResponse({"message": "Pedido eliminado exitosamente"}, status=200)
 
