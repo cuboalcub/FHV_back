@@ -133,3 +133,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
+
+#Configuración del broker
+MQTT_BROKER_HOST = 'localhost'
+MQTT_BROKER_PORT = 1883
