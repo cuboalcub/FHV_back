@@ -22,5 +22,6 @@ urlpatterns = [
     path('user/', include('user.urls')),
     path('pedido/', include('pedidos.urls')),
     path('mqtt/', include('mqtt.urls')),
+    path('invernadero/', include('invernadero.urls')),
     
 ]   

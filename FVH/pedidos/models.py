@@ -1,10 +1,10 @@
 from django.db import models
-from django.contrib.auth.models import User
+from user.models import Group
 
 # Create your models here.
 class Pedidos(models.Model):
     id = models.AutoField(primary_key=True)
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, default=1)
     fecha_pedido = models.DateTimeField(auto_now_add=True)
     tiempo_final = models.DateTimeField()
     estado = models.CharField(max_length=50)

@@ -2,12 +2,12 @@ import json
 import threading
 import paho.mqtt.client as mqtt
 from django.http import JsonResponse
-from user.user_Service import UserService
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from log_notificaciones.log_Service import LogService
 from django.contrib.auth.models import User
+from mqtt.models import Mqtt
 
 log_service = LogService()
 service = UserService()
@@ -48,9 +48,22 @@ mqtt_thread = threading.Thread(target=iniciar_cliente_mqtt)
 mqtt_thread.daemon = True
 mqtt_thread.start()
 
+
+
 @csrf_exempt
 @require_http_methods(["POST"])
 def list(request):
     data = json.loads(request.body)
     print(data)
+    return JsonResponse({"error": "Method not allowed"}, status=200)
+    payload = data.get("payload")
+    payload = json.loads(payload) if isinstance(payload, str) else payload
+    data["payload"] = payload.get("value")
+    print(data)
+    
+    Mqtt.objects.create(
+        topic=data["topic"],
+        payload=data["payload"],
+        qos=data["qos"]
+    )
     return JsonResponse({"error": "Method not allowed"}, status=200)

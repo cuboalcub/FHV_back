@@ -2,15 +2,17 @@ from typing import override
 from ENUM_RESPONSES import Responses
 from IRepository import BaseRepository
 from pedidos.models import DetallePedido, Pedidos
+from user.models import Group, detalleGroup
 
 class PedidosRepository(BaseRepository):
     def __init__(self): 
         super().__init__(Pedidos)
         
     @override
-    def find_all(self,user):
+    def find_all(self,id):
         try:
-            return self.model.objects.filter(user_id=user)    
+            
+            return self.model.objects.filter(group_id=id)    
         except Exception as e:
             return Responses.ERROR.value
         
@@ -18,6 +20,11 @@ class PedidosRepository(BaseRepository):
     def save(self, data):
         try:
             productos = data.pop('productos', [])
+            print(data)
+            user  = data.pop('user_id')
+            group = detalleGroup.objects.filter(user_id=user).first()
+            data['group_id'] = group.group_id.id
+            print(data)
             pedido = self.model.objects.create(**data)
             for prod in productos:
                 DetallePedido.objects.create(
@@ -27,7 +34,8 @@ class PedidosRepository(BaseRepository):
                 )
             return pedido
         except Exception as e:
-            return Responses.ERROR.value
+            print(e)
+            return Responses.INTERNAL_SERVER_ERROR.value
         
         
     @override
@@ -36,6 +44,7 @@ class PedidosRepository(BaseRepository):
             pedido = self.model.objects.get(id=id)
             pedido.user_id = data.pop('user_id')
             pedido.save()
+            print("Pedido actualizado")
             return pedido
         except Exception as e:    
             return Responses.INTERNAL_SERVER_ERROR.value    

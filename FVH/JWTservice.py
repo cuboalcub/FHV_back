@@ -23,3 +23,10 @@ class JWTService:
             return None  # Token expirado
         except jwt.InvalidTokenError:
             return None  # Token inválido
+        
+    @staticmethod
+    def validate_token(token):
+        payload = JWTService.decode_token(token)
+        if payload is None:
+            return {"error": "Invalid or expired token"}
+        return {"status": 200}

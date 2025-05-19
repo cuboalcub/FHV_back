@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+    
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -29,6 +29,9 @@ ALLOWED_HOSTS = [
 '*'
 ]
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8081",
+]
 
 # Application definition
 
@@ -46,10 +49,11 @@ INSTALLED_APPS = [
     'mqtt',
     'log_notificaciones',
     'pedidos',
-    
+    'invernadero',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -57,7 +61,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-     'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'FVH.urls'
@@ -137,3 +140,8 @@ CORS_ALLOW_ALL_ORIGINS = True
 #Configuración del broker
 MQTT_BROKER_HOST = 'localhost'
 MQTT_BROKER_PORT = 1883
+
+
+# settings.py
+APPEND_SLASH = False
+
