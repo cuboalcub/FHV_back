@@ -72,18 +72,17 @@ def delete_pedido(request, id):
     pedido.delete()
     return JsonResponse({"message": "Pedido eliminado exitosamente"}, status=200)
 
-
-@jwt_required
+@csrf_exempt
 @require_http_methods(["PATCH"])
-def update_estado(request, id):
+def update_detalle(request):
     data = json.loads(request.body)
-    estado = data.get("estado")
-    if not estado:
-        return JsonResponse({"message": "Estado no proporcionado"}, status=400)
-    user = userService.get_by_id(request.user_id).get("data")
-    pedido = Pedidos.objects.filter(id=id, user_id=user).first()
-    if not pedido:
-        return JsonResponse({"message": "Pedido no encontrado"}, status=404)
-    pedido.estado = estado
-    pedido.save()
-    return JsonResponse({"message": "Estado actualizado exitosamente"}, status=200)
+    print(data, "detalle")
+    for id,detallepedido in data.items(): 
+        detalle = DetallePedido.objects.filter(id=id).first()
+        print(detalle, type(detalle), "detalle")
+        pedido = Pedidos.objects.filter(id=model_to_dict(detalle).get("pedido_id")).first()
+        pedido.estado = "En progreso"
+        pedido.save()
+        detalle.cantidad = detalle.cantidad - int(detallepedido)
+        detalle.save()
+    return JsonResponse({"message": "Pedido actualizado exitosamente"}, status=200)
