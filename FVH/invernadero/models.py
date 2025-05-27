@@ -23,6 +23,6 @@ class Bandeja(models.Model):
     pedido_id = models.ForeignKey(DetallePedido, on_delete=models.CASCADE, null=True, blank=True)  # Relación con Pedidos
     semilla = models.CharField(max_length=100, default="No hay semilla")
     peso = models.FloatField(default=0)
-    fecha_fin = models.DateTimeField()
+    fecha_fin = models.DateTimeField(null=True, blank=True)
     estado = models.CharField(max_length=50)  # Ej: "activa", "inactiva", etc.
 

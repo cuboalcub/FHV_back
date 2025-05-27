@@ -139,7 +139,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 #Configuración del broker
 MQTT_BROKER_HOST = 'localhost'
-MQTT_BROKER_PORT = 1883
+MQTT_BROKER_PORT = 1884
 
 
 # settings.py
