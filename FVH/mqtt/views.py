@@ -18,7 +18,7 @@ log_service = LogService()
 service = UserService()
 
 MQTT_BROKER_HOST = settings.MQTT_BROKER_HOST
-MQTT_BROKER_PORT = settings.MQTT_BROKER_PORT
+MQTT_BROKER_PORT = settings.MQTT_BROKER_PORT    
 topicos = Mqtt.objects.all()
 topicos_list = [topic.topic for topic in topicos] 
 notificaciones = [topic for topic in topicos_list if "/notification" in topic]
@@ -119,8 +119,12 @@ def topic(request):
 @require_http_methods(["GET"])
 def get_topics_sensores(request,id):
     try:
-        topicos = Mqtt.objects.filter(invernadero_id=id)
-        resultado = [{"topic": topic.topic, "id": topic.id} for topic in topicos if  "/sensor" in topic.topic]
+        inv = Invernadero.objects.filter(id=id).first()
+        topicos = Mqtt.objects.filter(invernadero = inv)
+        topicos = [model_to_dict(topic).get("topic") for topic in topicos ]
+        print(topicos)
+        resultado = [topic for topic in topicos if  "/sensor" in topic]
+        print(resultado)
         return JsonResponse(resultado, safe=False)
     except Exception as e:  
         return JsonResponse({"error": str(e)}, status=400)
@@ -129,9 +133,11 @@ def get_topics_sensores(request,id):
 @require_http_methods(["GET"])
 def get_topic_actuadores(s, id):
     try:
-        inv = Invernadero.objects.get(id=id)
-        topicos = Mqtt.objects.filter(invernadero=inv)
-        resultado = [{"topic": topic.topic, "id": topic.id} for topic in topicos if  "/actuador" in topic.topic]
+        inv = Invernadero.objects.filter(id=id).first()
+        topicos = Mqtt.objects.filter(invernadero = inv)
+        topicos = [model_to_dict(topic).get("topic") for topic in topicos ]
+        print(topicos)
+        resultado = [topic for topic in topicos if  "/actuator" in topic ]
         print(resultado)
         return JsonResponse(resultado, safe=False)
     except Exception as e:  
