@@ -17,11 +17,16 @@ from user.models import Group
 log_service = LogService()
 service = UserService()
 
+#se modificó esta parte porque entraba em loop infinito al cargar antes la base que intentar crearla
 MQTT_BROKER_HOST = settings.MQTT_BROKER_HOST
 MQTT_BROKER_PORT = settings.MQTT_BROKER_PORT    
-topicos = Mqtt.objects.all()
-topicos_list = [topic.topic for topic in topicos] 
-notificaciones = [topic for topic in topicos_list if "/notification" in topic]
+def get_notificaciones():
+    """Obtiene los tópicos de notificación dinámicamente."""
+    topicos = Mqtt.objects.all()
+    topicos_list = [topic.topic for topic in topicos]
+    return [topic for topic in topicos_list if "/notification" in topic]
+
+notificaciones = []
 
 def on_message(client, userdata, message):
     try:
@@ -44,10 +49,14 @@ def on_message(client, userdata, message):
         print(f"Error al procesar el mensaje: {e}")
 
 # Función para iniciar el cliente MQTT en segundo plano
+#Este igual se modificó
 def iniciar_cliente_mqtt():
     client = mqtt.Client()
     client.on_message = on_message
     client.connect(MQTT_BROKER_HOST, MQTT_BROKER_PORT)
+    
+    # Carga los tópicos solo cuando se llama la función (no al importar el módulo)
+    notificaciones = get_notificaciones()  # ← Ahora se ejecuta después de las migraciones
     for notificacion in notificaciones:
         client.subscribe(notificacion)
     client.loop_forever()

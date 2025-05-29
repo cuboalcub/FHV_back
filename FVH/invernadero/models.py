@@ -5,7 +5,7 @@ class Invernadero(models.Model):
     id = models.AutoField(primary_key=True)
     group_id = models.ForeignKey(Group, on_delete=models.CASCADE, null=True, blank=True, default=1)  
     ubicacion = models.CharField(max_length=100)
-    num_bandejas = models.IntegerField()  # 
+    num_bandejas = models.IntegerField()
     
     
 

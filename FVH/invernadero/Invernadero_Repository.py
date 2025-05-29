@@ -11,15 +11,19 @@ class InvernaderoRepository(BaseRepository):
         super().__init__(Invernadero)
         
     @override
-    def get_all(self,user_id):
+    def get_all(self, user_id):
         try:
-            group = detalleGroup.objects.filter(user_id=user_id).first()
-            invenaderos = Invernadero.objects.filter(group_id=group.group_id)
-            if not invenaderos:
-                return Responses.NOT_FOUND.value
-            return invenaderos
+            from user.models import detalleGroup
+            detalle = detalleGroup.objects.filter(user_id=user_id).first()
+        
+            if not detalle or not detalle.group_id:
+                return []
+
+            invernaderos = Invernadero.objects.filter(group_id=detalle.group_id)
+            return invernaderos
         except Exception as e:
-            return Responses.INTERNAL_SERVER_ERROR.value
+            print(f"Error en get_all InvernaderoRepository: {e}")
+            return []
             
     @override
     def create(self, data):
