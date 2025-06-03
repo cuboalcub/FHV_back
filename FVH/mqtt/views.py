@@ -29,7 +29,7 @@ def on_message(client, userdata, message):
         topico = message.topic
         print(f"Mensaje recibido en el tópico {topico}: {mensaje}")
         grupos = [model_to_dict(topic.invernadero).get("group_id") for topic in topicos if topico == topic.topic]
-        
+        mensaje = mensaje + f" en el tópico {topico}"
         for g in grupos:
             grupo = Group.objects.filter(id=g).first()
             if grupo:
