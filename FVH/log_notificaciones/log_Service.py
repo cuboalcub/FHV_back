@@ -40,5 +40,3 @@ class LogService(IService):
         except Exception as e:
             print(f"Error al obtener las notificaciones: {e}")
             return []
-        
-        

@@ -22,8 +22,8 @@ def list(request):
 @require_http_methods(["POST"])
 def create_user(request):
     data = json.loads(request.body)
-    if data["is_superuser"] == True:
-        User.objects.create_superuser(**data)
+    # if data["is_superuser"] == True:
+    #     User.objects.create_superuser(**data)
     user = service.add(data)
     return JsonResponse(user, safe=False)  
 
@@ -32,6 +32,7 @@ def create_user(request):
 def login(request):
     data = json.loads(request.body)
     user = service.login(data)
+    print(user)
     return JsonResponse(user, safe=False)  
 
 

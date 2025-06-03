@@ -131,29 +131,47 @@ def get_topic_actuadores(s, id):
     try:
         inv = Invernadero.objects.get(id=id)
         topicos = Mqtt.objects.filter(invernadero=inv)
-        resultado = [{"topic": topic.topic, "id": topic.id} for topic in topicos if  "/actuador" in topic.topic]
+        resultado = [topic.topic for topic in topicos if  "/actuator" in topic.topic]
         print(resultado)
         return JsonResponse(resultado, safe=False)
     except Exception as e:  
         return JsonResponse({"error": str(e)}, status=400)
 
-# @csrf_exempt
-# @jwt_required
-# @require_http_methods(["POST"])
-# def mode_and_status(request):
-#     try:
-#         data = json.loads(request.body)
-#         invernadero = Invernadero.objects.get(id=data.get("invernadero"))
-#         topic = Mqtt.objects.get(topic=data.get("topic"), invernadero=invernadero)
-        
-#         # Actualizar el payload con el nuevo valor
-#         topic.payload = data.get("payload")
-#         topic.save()
-        
-#         return JsonResponse({"status": "success", "message": "MQTT data updated successfully"}, status=200)
-#     except Exception as e:
-#         return JsonResponse({"error": str(e)}, status=400)
+@jwt_required
+@csrf_exempt
+@require_http_methods(["POST"])
+def mode_and_status(request):
+    data = json.loads(request.body)
+    client = mqtt.Client()
+    client.connect(settings.MQTT_BROKER_HOST, settings.MQTT_BROKER_PORT)
+    json_mode = {
+        "mode": "AUTO"
+    }
+    topic = data.get("topic")
+    topic = topic.replace("mode", "command")
+    print(topic)
+    print(data)
+    if data.get("state") == "AUTO":
+        client.publish(topic,json.dumps(json_mode) )
+    else:
+        json_mode = {
+            "mode": "MANUAL",
+            "command": "OFF"
+        }
+        client.publish(topic,json.dumps(json_mode) )
+        print("activando modo manual")
+    return JsonResponse({"status": "success", "message": "Mode and status updated successfully"}, status=200)
 
+@csrf_exempt
+@require_http_methods(["GET"])
+def get_temperature(s, id):
+    try:
+        inv = Invernadero.objects.get(id=id)
+        topicos = Mqtt.objects.filter(invernadero=inv)
+        resultado = [topic.topic for topic in topicos if  "/sensor/temperature" in topic.topic]
+        return JsonResponse(resultado, safe=False)
+    except Exception as e:  
+        return JsonResponse({"error": str(e)}, status=400)
 
 
 

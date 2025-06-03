@@ -83,6 +83,7 @@ class UserService(IService):
 
     def add_user_group(self, data, user_admin):
         try:
+            user_admin = model_to_dict(user_admin)
             user = self.repository.get_user_by_username(data['username'])
             if not user:
                 return {"status": Responses.NOT_FOUND.value, "message": "User not found"}

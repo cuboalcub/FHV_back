@@ -23,5 +23,5 @@ urlpatterns = [
     path('pedido/', include('pedidos.urls')),
     path('mqtt/', include('mqtt.urls')),
     path('invernadero/', include('invernadero.urls')),
-    
+    path('log_notificaciones/', include('log_notificaciones.url'))
 ]   
